@@ -1,0 +1,75 @@
+<div class="p-6 space-y-6 max-w-7xl mx-auto">
+  <!-- En-tête -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Tableau de Bord Stratégique</h1>
+      <p class="text-sm text-slate-500 mt-1">Supervision globale des chantiers et trésorerie en Dinars Algériens (DZD)</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button (click)="fetchDashboardSummary()" class="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg shadow-sm hover:bg-slate-50 transition-colors">
+        Actualiser
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading & Error -->
+  <div *ngIf="loading" class="p-12 text-center text-slate-500">
+    <div class="animate-spin inline-block w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full mb-3"></div>
+    <p class="text-sm">Chargement des indicateurs financiers...</p>
+  </div>
+
+  <div *ngIf="error" class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+    {{ error }}
+  </div>
+
+  <!-- Cartes KPIs -->
+  <div *ngIf="!loading && summary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <!-- Trésorerie Globale -->
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+        <span>Trésorerie Globale</span>
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+      </div>
+      <div class="text-2xl font-bold text-slate-900">
+        {{ formatDzd(summary.totalTresorerieGlobale) }}
+      </div>
+      <p class="text-xs text-slate-500 mt-1">Soldes consolidés caisses & banques</p>
+    </div>
+
+    <!-- Budget Chantiers -->
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+        <span>Budget Chantiers</span>
+        <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+      </div>
+      <div class="text-2xl font-bold text-slate-900">
+        {{ formatDzd(summary.totalBudgetChantiers) }}
+      </div>
+      <p class="text-xs text-slate-500 mt-1">{{ summary.chantiersActifsCount }} projets en cours d'exécution</p>
+    </div>
+
+    <!-- Dépenses du Mois -->
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+        <span>Dépenses M-1</span>
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+      </div>
+      <div class="text-2xl font-bold text-slate-900">
+        {{ formatDzd(summary.totalDepensesMois) }}
+      </div>
+      <p class="text-xs text-slate-500 mt-1">Décaissements et règlements</p>
+    </div>
+
+    <!-- Effectif Ouvriers -->
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+      <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+        <span>Effectif Actif</span>
+        <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+      </div>
+      <div class="text-2xl font-bold text-slate-900">
+        {{ summary.totalEffectifOuvriers }} ouvriers
+      </div>
+      <p class="text-xs text-slate-500 mt-1">Affectés sur chantiers</p>
+    </div>
+  </div>
+</div>

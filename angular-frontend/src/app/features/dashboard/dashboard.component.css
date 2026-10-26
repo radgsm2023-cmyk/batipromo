@@ -1,0 +1,4 @@
+/* Custom dashboard styles if needed */
+:host {
+  display: block;
+}

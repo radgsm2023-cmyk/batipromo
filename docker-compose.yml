@@ -1,0 +1,81 @@
+# ==============================================================================
+# BATIPROMO DZ - Orchestration Docker Compose
+# Stack : ASP.NET Core 6 Web API · Angular 15 · PostgreSQL (Supabase Compatible)
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Base de Données Relationnelle PostgreSQL
+  # ----------------------------------------------------------------------------
+  postgres:
+    image: postgres:15-alpine
+    container_name: batipromo_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: batipromo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Initialisation automatique avec le schéma Supabase au premier lancement
+      - ./database-supabase/schema_supabase.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d batipromo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - batipromo_net
+
+  # ----------------------------------------------------------------------------
+  # 2. Backend ASP.NET Core 6 Web API
+  # ----------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./aspnetcore-backend
+      dockerfile: Dockerfile
+    container_name: batipromo_backend_aspnet
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=batipromo;Username=postgres;Password=postgres_password_2026;SSL Mode=Prefer;
+      - Jwt__Key=BatipromoDzSuperSecretEncryptionKey2026ForAspDotNetCoreJwtAuth!*
+      - Jwt__Issuer=BatipromoDzApi
+      - Jwt__Audience=BatipromoDzAngularClient
+      - Jwt__ExpiryDays=7
+    ports:
+      - "5000:5000"
+    networks:
+      - batipromo_net
+
+  # ----------------------------------------------------------------------------
+  # 3. Frontend Angular 15 (Servi par Nginx)
+  # ----------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./angular-frontend
+      dockerfile: Dockerfile
+    container_name: batipromo_frontend_angular
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    networks:
+      - batipromo_net
+
+networks:
+  batipromo_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

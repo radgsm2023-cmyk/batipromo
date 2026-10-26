@@ -1,0 +1,46 @@
+# ==============================================================================
+# BATIPROMO DZ - Blueprint de Déploiement Render (Infrastructure-as-Code)
+# Backend : ASP.NET Core 6 (Web Service Docker)
+# Frontend : Angular 15 (Static Site)
+# Base de données : Supabase PostgreSQL
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Backend Web API ASP.NET Core 6 (Conteneur Docker)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: batipromo-aspnet-api
+    env: docker
+    dockerfilePath: ./aspnetcore-backend/Dockerfile
+    dockerContext: ./aspnetcore-backend
+    region: frankfurt
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        value: Host=aws-0-eu-west-1.pooler.supabase.com;Port=5432;Database=postgres;Username=postgres.bbldpilwekgdbbnjwslb;Password=Radino@2019@;SSL Mode=Require;Trust Server Certificate=true;
+      - key: Jwt__Key
+        value: BatipromoDzSuperSecretEncryptionKey2026ForAspDotNetCoreJwtAuth!*
+      - key: Jwt__Issuer
+        value: BatipromoDzApi
+      - key: Jwt__Audience
+        value: BatipromoDzAngularClient
+      - key: Jwt__ExpiryDays
+        value: "7"
+
+  # ----------------------------------------------------------------------------
+  # 2. Frontend Angular 15 (Site Statique Global CDN)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: batipromo-angular-app
+    env: static
+    buildCommand: cd angular-frontend && npm install --legacy-peer-deps && npx ng build
+    staticPublishPath: ./angular-frontend/dist
+    routes:
+      # Support du routage SPA Angular (Redirection de toutes les sous-routes vers index.html)
+      - type: rewrite
+        source: /*
+        destination: /index.html

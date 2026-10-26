@@ -1,0 +1,30 @@
+<div class="min-h-screen bg-slate-50 flex flex-col">
+  <!-- Barre Supérieure -->
+  <header class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between border-b border-slate-800 shadow-sm">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-amber-500 flex items-center justify-center font-bold text-slate-950">
+        BP
+      </div>
+      <div>
+        <div class="font-bold tracking-tight text-white flex items-center gap-2">
+          BATIPROMO DZ
+          <span class="text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded">
+            Angular 15
+          </span>
+        </div>
+        <div class="text-xs text-slate-400">ERP Multi-Chantiers & Trésorerie DZD</div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <div class="text-xs text-slate-400 hidden sm:block">
+        Backend : <span class="text-amber-400 font-medium">ASP.NET Core 6</span> · BDD : <span class="text-emerald-400 font-medium">Supabase PG</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenu Principal -->
+  <main class="flex-1">
+    <router-outlet></router-outlet>
+  </main>
+</div>
